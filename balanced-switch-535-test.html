@@ -14,7 +14,7 @@ const N=300,gap=3,colors=['#82959e','#9a8f9d','#82988d','#aa9a83','#8d9caa','#a7
 let density=5,committed=5,gesture=null;
 for(let i=0;i<N;i++){let el=document.createElement('div');el.className='tile';el.style.background=colors[(i*13+Math.floor(i/7))%colors.length];el.textContent=String(i+1);grid.append(el)}
 const tiles=[...grid.children];
-function render(){let w=stage.clientWidth,cell=(w-gap*(committed-1))/committed;grid.style.height=(Math.ceil(N/committed)*(cell+gap))+'px';for(let i=0;i<N;i++){let t=tiles[i];t.style.width=cell+'px';t.style.height=cell+'px';t.style.transform='translate3d('+((i%committed)*(cell+gap))+'px,'+(Math.floor(i/committed)*(cell+gap))+'px,0)'}if(gesture&&density>5+(0.35)&&committed===5){committed=6;}else if(gesture&&density<5+(0.35-.08)&&committed===6){committed=5;}let scale=committed/density;grid.style.transform='scale('+scale+')';readout.textContent=density.toFixed(2);slider.value=density}
+function render(){if(gesture&&density>5+.35&&committed===5)committed=6;else if(gesture&&density<5+.35-.08&&committed===6)committed=5;let w=stage.clientWidth,cell=(w-gap*(committed-1))/committed;grid.style.height=(Math.ceil(N/committed)*(cell+gap))+'px';for(let i=0;i<N;i++){let t=tiles[i];t.style.width=cell+'px';t.style.height=cell+'px';t.style.transform='translate3d('+((i%committed)*(cell+gap))+'px,'+(Math.floor(i/committed)*(cell+gap))+'px,0)'}let scale=committed/density;grid.style.transform='scale('+scale+')';readout.textContent=density.toFixed(2);slider.value=density}
 function setDensity(v){density=Math.max(3,Math.min(10,v));render()}
 slider.addEventListener('input',()=>setDensity(+slider.value));
 const dist=e=>Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
