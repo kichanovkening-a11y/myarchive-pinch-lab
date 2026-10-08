@@ -1,0 +1,37 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Мой архив · pinch v14 full layer alignment</title><style>*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#d7d9d7;color:#24303a;font:14px -apple-system,sans-serif}header{height:100px;padding:10px 12px;background:#f5f6f5;border-bottom:1px solid #bbc1bd}h1{font-size:16px;margin:0 0 7px}.controls{display:flex;gap:8px;align-items:center}input{flex:1;min-width:0}#readout{min-width:50px;font-variant-numeric:tabular-nums;font-weight:600}#status{font-size:11px;color:#56646b;margin-top:6px}#stage{position:relative;height:calc(100dvh - 100px);overflow:hidden;touch-action:none}canvas{display:block;width:100%;height:100%;touch-action:none}</style></head><body><header><h1>Мой архив · v14 · aligned layers</h1><div class="controls"><span>3</span><input id="density" type="range" min="3" max="10" step=".01" value="5"><span>10</span><b id="readout">5.00</b></div><div id="status">Слои: 5 → 6 · pinch или ползунок</div></header><div id="stage"><canvas id="canvas"></canvas></div><script>
+'use strict';
+const stage=document.querySelector('#stage'),canvas=document.querySelector('#canvas'),ctx=canvas.getContext('2d',{alpha:false}),slider=document.querySelector('#density'),out=document.querySelector('#readout'),status=document.querySelector('#status');
+const N=300,gap=3,colors=['#82959e','#9a8f9d','#82988d','#aa9a83','#8d9caa','#a79a9a','#8d9b8d'];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+let density=5,active=5,scroll=0,gesture=null,drag=null,frame=0;
+let anchor={index:22,fx:.5,fy:.5,x:195,y:260};
+function size(){return stage.clientWidth}
+function locate(x,y,cols=active){const s=size()/cols;const col=clamp(Math.floor(x/s),0,cols-1),row=Math.max(0,Math.floor((y+scroll)/s));return {index:clamp(row*cols+col,0,N-1),fx:clamp((x-col*s)/s,0,1),fy:clamp((y+scroll-row*s)/s,0,1),x,y}}
+function capture(x,y){anchor=locate(x,y)}
+function anchorOffset(cols){const s=size()/cols;return (Math.floor(anchor.index/cols)+anchor.fy)*s-anchor.y}
+function drawLayer(cols,alpha){if(alpha<=.001)return;const w=size(),h=stage.clientHeight,s=w/density,scale=cols/density;const targetCol=clamp(Math.floor(anchor.x/s),0,cols-1),actualCol=anchor.index%cols;
+const pad=(targetCol-actualCol+cols)%cols;const padded=anchor.index+pad;
+const row=Math.floor(padded/cols),col=padded%cols;
+const shiftX=anchor.x-(col+anchor.fx)*s;
+const shiftY=anchor.y-(row+anchor.fy)*s;
+ctx.globalAlpha=alpha;
+const start=Math.max(0,Math.floor((-shiftY/s-2))*cols-pad),end=Math.min(N,Math.ceil((h-shiftY)/s+2)*cols-pad);
+for(let i=start;i<end;i++){const j=i+pad,x=shiftX+(j%cols)*s,y=shiftY+Math.floor(j/cols)*s;if(x+s<0||x>w||y+s<0||y>h)continue;ctx.fillStyle=colors[(i*13+Math.floor(i/7))%colors.length];ctx.fillRect(x+gap/2,y+gap/2,Math.max(0,s-gap),Math.max(0,s-gap));ctx.fillStyle='#ffffffdf';ctx.font=Math.max(10,Math.min(15,s*.18))+'px -apple-system,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(i+1),x+s/2,y+s/2)}
+ctx.globalAlpha=1}
+function paint(){cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const w=size(),h=stage.clientHeight,dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#d7d9d7';ctx.fillRect(0,0,w,h);
+const low=clamp(Math.floor(density),3,10),high=clamp(low+1,3,10),t=clamp(density-low,0,1);
+if(low===high)drawLayer(low,1);else {drawLayer(high,t);drawLayer(low,1-t)}
+out.textContent=density.toFixed(2);slider.value=density;status.textContent='Слои '+low+' → '+high+' · anchor #'+(anchor.index+1)+' · '+(gesture?'HOLD/reverse':'покой')})}
+function setDensity(d){density=clamp(d,3,10);paint()}
+function settle(){active=clamp(Math.round(density),3,10);density=active;scroll=clamp(anchorOffset(active),0,Math.max(0,Math.ceil(N/active)*size()/active-stage.clientHeight));anchor.y=(Math.floor(anchor.index/active)+anchor.fy)*size()/active-scroll;paint()}
+const dist=e=>Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+const mid=e=>({x:(e.touches[0].clientX+e.touches[1].clientX)/2,y:(e.touches[0].clientY+e.touches[1].clientY)/2-stage.getBoundingClientRect().top});
+stage.addEventListener('touchstart',e=>{if(e.touches.length===2){e.preventDefault();const m=mid(e);if(!gesture)capture(m.x,m.y);gesture={dist:dist(e),density};drag=null}else if(e.touches.length===1){drag={y:e.touches[0].clientY,scroll}}},{passive:false});
+stage.addEventListener('touchmove',e=>{if(e.touches.length===2&&gesture){e.preventDefault();const m=mid(e);anchor.x=m.x;anchor.y=m.y;setDensity(gesture.density*gesture.dist/dist(e))}else if(e.touches.length===1&&drag&&!gesture){e.preventDefault();scroll=clamp(drag.scroll+drag.y-e.touches[0].clientY,0,Math.max(0,Math.ceil(N/active)*size()/active-stage.clientHeight));capture(size()/2,stage.clientHeight/2);paint()}},{passive:false});
+stage.addEventListener('touchend',e=>{if(e.touches.length<2&&gesture){gesture=null;settle()}if(!e.touches.length)drag=null});
+stage.addEventListener('touchcancel',()=>{gesture=null;drag=null;settle()});
+slider.addEventListener('input',()=>{if(!gesture){capture(size()/2,stage.clientHeight/2)}setDensity(+slider.value)});
+slider.addEventListener('change',settle);
+window.addEventListener('resize',()=>{anchor.x=size()/2;paint()});
+anchor={index:22,fx:.5,fy:.5,x:size()/2,y:stage.clientHeight/2};scroll=anchorOffset(5);paint();
+</script></body></html>
