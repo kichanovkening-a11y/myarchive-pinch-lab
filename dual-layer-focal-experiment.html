@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Dual-layer pinch lab</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#d7d9d7;color:#25303a;touch-action:none}
+header{height:90px;padding:12px 16px;background:#f5f6f5;display:flex;flex-direction:column;gap:7px;border-bottom:1px solid #b8bdba}
+h1{margin:0;font-size:18px}.controls{display:flex;align-items:center;gap:10px}input{flex:1;min-width:0}#stage{height:calc(100dvh - 90px);overflow:auto;touch-action:none;overscroll-behavior:none;position:relative}
+#grid{position:relative;width:100%;transform-origin:0 0}#next{position:absolute;top:0;left:0;width:100%;transform-origin:0 0;pointer-events:none;opacity:0}.tile.nextTile{opacity:1}.tile{position:absolute;overflow:hidden;border-radius:3px;display:grid;place-items:center;color:#ffffffbd;font-size:11px;will-change:transform}
+#readout{font-variant-numeric:tabular-nums;font-weight:600;min-width:80px}
+</style></head><body><header><h1>Мой архив · двухслойный pinch</h1><div class="controls"><span>3</span><input id="density" type="range" min="3" max="10" step=".01" value="5"><span>10</span><span id="readout">5.00</span></div></header><div id="stage"><div id="next"></div><div id="grid"></div></div>
+<script>
+'use strict';
+const stage=document.querySelector('#stage'),grid=document.querySelector('#grid'),slider=document.querySelector('#density'),readout=document.querySelector('#readout');
+const N=300,gap=3,colors=['#82959e','#9a8f9d','#82988d','#aa9a83','#8d9caa','#a79a9a','#8d9b8d'];
+let density=5,committed=5,gesture=null;
+for(let i=0;i<N;i++){let el=document.createElement('div');el.className='tile';el.style.background=colors[(i*13+Math.floor(i/7))%colors.length];el.textContent=String(i+1);grid.append(el)}
+const tiles=[...grid.children];const next=document.querySelector('#next');for(let i=0;i<N;i++){const el=tiles[i].cloneNode(true);el.classList.add('nextTile');next.append(el)}const nextTiles=[...next.children];
+function render(){let w=stage.clientWidth,cell=(w-gap*(committed-1))/committed;grid.style.height=(Math.ceil(N/committed)*(cell+gap))+'px';for(let i=0;i<N;i++){let t=tiles[i];t.style.width=cell+'px';t.style.height=cell+'px';t.style.transform='translate3d('+((i%committed)*(cell+gap))+'px,'+(Math.floor(i/committed)*(cell+gap))+'px,0)'}let scale=committed/density;grid.style.transform='scale('+scale+')';
+if(gesture&&density>committed){const target=Math.min(10,committed+1),targetSize=(w-gap*(target-1))/target;const activeSize=cell;const id=Math.min(N-1,Math.max(0,gesture.anchor));const activeX=(id%committed)*(cell+gap),activeY=Math.floor(id/committed)*(cell+gap);
+const nextX=(id%target)*(targetSize+gap),nextY=Math.floor(id/target)*(targetSize+gap);
+const targetScale=target/density;const dx=activeX*scale-nextX*targetScale,dy=activeY*scale-nextY*targetScale;
+next.style.height=Math.ceil(N/target)*(targetSize+gap)+'px';for(let i=0;i<N;i++){const t=nextTiles[i];t.style.width=targetSize+'px';t.style.height=targetSize+'px';t.style.transform='translate3d('+((i%target)*(targetSize+gap))+'px,'+(Math.floor(i/target)*(targetSize+gap))+'px,0)'}
+next.style.transform='translate3d('+dx+'px,'+dy+'px,0) scale('+targetScale+')';next.style.opacity=String(Math.max(0,Math.min(1,(density-committed)/.85)));grid.style.opacity=String(Math.max(0,Math.min(1,1-(density-committed)/.85)));
+}else{next.style.opacity='0';grid.style.opacity='1'}
+readout.textContent=density.toFixed(2);slider.value=density}
+function setDensity(v){density=Math.max(3,Math.min(10,v));render()}
+slider.addEventListener('input',()=>setDensity(+slider.value));
+const dist=e=>Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+stage.addEventListener('touchstart',e=>{if(e.touches.length===2){e.preventDefault();gesture={distance:dist(e),density,anchor:(()=>{const t=document.elementFromPoint((e.touches[0].clientX+e.touches[1].clientX)/2,(e.touches[0].clientY+e.touches[1].clientY)/2)?.closest('.tile');return t?tiles.indexOf(t):0})()};}},{passive:false});
+stage.addEventListener('touchmove',e=>{if(e.touches.length===2&&gesture){e.preventDefault();setDensity(gesture.density*gesture.distance/dist(e))}},{passive:false});
+function end(e){if(gesture&&e.touches.length<2){gesture=null;committed=Math.round(density);density=committed;grid.style.transform='none';render()}}
+stage.addEventListener('touchend',end);stage.addEventListener('touchcancel',()=>{gesture=null;committed=Math.round(density);density=committed;render()});
+window.addEventListener('resize',render);render();
+</script></body></html>
