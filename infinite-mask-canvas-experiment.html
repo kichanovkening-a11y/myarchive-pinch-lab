@@ -19,7 +19,7 @@ function capture(){const w=stage.clientWidth,h=stage.clientHeight,dpr=Math.min(d
 function drawMask(){if(!snap)return;const {w,h,cell,items}=snap,scale=snap.committed/density;ctx.clearRect(0,0,w,h);ctx.fillStyle='#d7d9d7';ctx.fillRect(0,0,w,h);const anchor=gesture?.focalX??w/2;const ax=(1-scale)*anchor;for(const item of items){let x=ax+item.x*scale,y=item.y*scale;ctx.fillStyle=colors[(item.id*13+Math.floor(item.id/7))%colors.length];ctx.fillRect(x,y,cell*scale,cell*scale);ctx.fillStyle='#ffffffbd';ctx.font='11px sans-serif';ctx.fillText(String(item.id+1),x+8,y+15)}
  // Explicit edge extrapolation: fill uncovered right strip with a sampled edge column.
  // This is deliberately a visual illusion; duplicated content is tracked in tests.
- const right=ax+w*scale;if(right<w){const strip=Math.max(1,cell*scale);let x=right;while(x<w){for(const item of items){if(item.x+cell<snap.w-step)continue;const y=item.y*scale;ctx.fillStyle=colors[(item.id*13+Math.floor(item.id/7))%colors.length];ctx.fillRect(x,y,Math.min(strip,w-x),cell*scale);ctx.fillStyle='#ffffffbd';ctx.fillText(String(item.id+1),x+8,y+15)}x+=strip+gap*scale}}
+ const right=ax+w*scale;if(right<w){const strip=Math.max(1,cell*scale);let x=right;while(x<w){for(const item of items){if(item.x+cell<snap.w-(cell+gap))continue;const y=item.y*scale;ctx.fillStyle=colors[(item.id*13+Math.floor(item.id/7))%colors.length];ctx.fillRect(x,y,Math.min(strip,w-x),cell*scale);ctx.fillStyle='#ffffffbd';ctx.fillText(String(item.id+1),x+8,y+15)}x+=strip+gap*scale}}
 }
 function setDensity(v){density=Math.max(3,Math.min(10,v));render()}
 slider.addEventListener('input',()=>setDensity(+slider.value));
