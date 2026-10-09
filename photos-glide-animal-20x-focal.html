@@ -1,0 +1,79 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Glide — животное 20× · исправлено</title><style>*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#d7d9d7;font:14px -apple-system,sans-serif;color:#263039}header{height:84px;background:#f4f5f3;padding:9px 14px;border-bottom:1px solid #b8bdba}h1{font-size:16px;margin:0 0 9px}.controls{display:flex;gap:9px;align-items:center}input{flex:1;min-width:0}#read{min-width:44px;font-weight:700}#stage{height:calc(100dvh - 84px);position:relative;overflow:hidden;touch-action:none}.tile{position:absolute;border-radius:3px;display:grid;place-items:center;color:white;will-change:transform;background-size:cover;background-position:center;overflow:hidden}@keyframes softFocus{0%{opacity:.90}100%{opacity:1}}#stage.switching .tile{animation:softFocus 115ms ease-out both}.hint{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:11px;pointer-events:none;color:#334}</style><header><h1>Glide — животное 20× · исправлено</h1><div class="controls"><span>1</span><input id="slider" type="range" min="1" max="30" step=".01" value="5"><span>30</span><span id="read">5.00</span></div></header><div id="stage"><div class="hint">20 000 фото · 2 px до 6 · 1 px на 12 · 0 px от 20</div></div><script>
+'use strict';const stage=document.querySelector('#stage'),slider=document.querySelector('#slider'),read=document.querySelector('#read'),N=20000,colors=['#82959e','#9a8f9d','#82988d','#aa9a83','#8d9caa','#a79a9a','#8d9b8d'];let density=5,scroll=0,gesture=null,raf=0,lastCols=5,focusTimer=0,glideRaf=0;const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));const gapFor=d=>d<=6?2:d>=20?0:d<=12?2-(d-6)/6:(1-(d-12)/8);let G=0;const POOL=180,tiles=Array.from({length:POOL},()=>{const e=document.createElement('div');e.className='tile';stage.append(e);return e});let lastStart=-1,lastN=-1,drawQueued=false;const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:false}),cache=new Map();canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none';stage.insertBefore(canvas,stage.firstChild);function thumb(i){const id=i%90;if(!cache.has(id)){const img=new Image();img.decoding='async';img.onload=()=>scheduleRender();img.src=id===0?'https://images.unsplash.com/photo-1552053831-71594a27632d?w=640&q=85':'https://picsum.photos/seed/archive-'+(id+1)+'/160/160';cache.set(id,img)}return cache.get(id)}function drawCanvas(w,h,n,sz,step){const dpr=Math.min(devicePixelRatio||1,2),cw=Math.round(w*dpr),ch=Math.round(h*dpr);if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#d7d9d7';ctx.fillRect(0,0,w,h);const row0=Math.max(0,Math.floor(scroll/step)),row1=Math.min(Math.ceil(N/n),Math.ceil((scroll+h)/step)+1);for(let row=row0;row<row1;row++){const y=row*step-scroll;for(let col=0;col<n;col++){const i=row*n+col;if(i>=N)break;const x=col*step;ctx.fillStyle=colors[(i*13+Math.floor(i/7))%colors.length];ctx.fillRect(x,y,sz,sz);const img=thumb(i);if(img.complete&&img.naturalWidth){ctx.drawImage(img,x,y,sz,sz)}}}}function scheduleRender(){if(drawQueued)return;drawQueued=true;requestAnimationFrame(()=>{drawQueued=false;render()})}
+function render(){G=gapFor(density);const w=stage.clientWidth,h=stage.clientHeight,n=Math.round(density),sz=(w-G*(n-1))/n,step=sz+G;read.textContent=density.toFixed(2)+' → '+n;slider.value=density;const maxScroll=Math.max(0,Math.ceil(N/n)*step-h);scroll=clamp(scroll,0,maxScroll);const useCanvas=n>=10;canvas.style.display=useCanvas?'block':'none';if(useCanvas){for(const e of tiles)e.style.display='none';drawCanvas(w,h,n,sz,step);lastCols=n;return}if(n!==lastCols){lastCols=n;stage.classList.remove('switching');void stage.offsetWidth;stage.classList.add('switching');clearTimeout(focusTimer);focusTimer=setTimeout(()=>stage.classList.remove('switching'),125)}
+const firstRow=Math.max(0,Math.floor(scroll/step)-1),lastRow=Math.ceil((scroll+h)/step)+1,start=firstRow*n,end=Math.min(N,(lastRow+1)*n);let k=0;
+for(let i=start;i<end&&k<POOL;i++,k++){const e=tiles[k],y=Math.floor(i/n)*step-scroll,x=(i%n)*step;if(e.dataset.idx!==String(i)){e.dataset.idx=String(i);e.style.backgroundColor=colors[(i*13+Math.floor(i/7))%colors.length];e.style.backgroundImage='url('+(i===0?'https://images.unsplash.com/photo-1552053831-71594a27632d?w=640&q=85':'https://picsum.photos/seed/archive-'+((i%90)+1)+'/160/160')+')'}e.style.display='grid';e.style.width=sz+'px';e.style.height=sz+'px';e.style.transform='translate3d('+x+'px,'+y+'px,0)'}for(;k<POOL;k++)tiles[k].style.display='none'}
+function bounds(){G=gapFor(density);const n=Math.round(density),w=stage.clientWidth,step=(w-G*(n-1))/n+G;return Math.max(0,Math.ceil(N/n)*step-stage.clientHeight)}function stopGlide(){cancelAnimationFrame(glideRaf);glideRaf=0}function startGlide(v){stopGlide();let last=performance.now();function tick(now){const dt=Math.min(40,now-last);last=now;v*=Math.exp(-dt/380);scroll=clamp(scroll+v*dt,0,bounds());scheduleRender();if(Math.abs(v)>.025&&scroll>0&&scroll<bounds())glideRaf=requestAnimationFrame(tick);else glideRaf=0}if(Math.abs(v)>.08)glideRaf=requestAnimationFrame(tick)}function set(v){density=clamp(v,1,30);scheduleRender()}function stop(){cancelAnimationFrame(raf);raf=0}function settle(){stop();const from=density,to=Math.round(from),start=performance.now();if(Math.abs(to-from)<.003){set(to);return}function frame(now){const p=clamp((now-start)/260,0,1),ease=p*p*(3-2*p);set(from+(to-from)*ease);if(p<1)raf=requestAnimationFrame(frame);else{set(to);raf=0}}raf=requestAnimationFrame(frame)}
+slider.addEventListener('input',()=>{stop();set(+slider.value)});slider.addEventListener('change',settle);const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+stage.addEventListener('touchstart',e=>{stop();stopGlide();if(e.touches.length===2){e.preventDefault();gesture={mode:'pinch',dist:dist(e.touches),density}}else if(e.touches.length===1)gesture={mode:'scroll',y:e.touches[0].clientY,scroll,lastY:e.touches[0].clientY,lastT:performance.now(),velocity:0}},{passive:false});
+stage.addEventListener('touchmove',e=>{if(!gesture)return;e.preventDefault();if(e.touches.length===2){if(gesture.mode!=='pinch')gesture={mode:'pinch',dist:dist(e.touches),density};set(gesture.density*Math.pow(gesture.dist/dist(e.touches),1.55))}else if(e.touches.length===1&&gesture.mode==='scroll'){const now=performance.now(),dy=gesture.lastY-e.touches[0].clientY,dt=Math.max(1,now-gesture.lastT),speed=Math.round(density)>=10?1.65:1;gesture.velocity=gesture.velocity*.35+(dy*speed/dt)*.65;gesture.lastY=e.touches[0].clientY;gesture.lastT=now;scroll=clamp(scroll+dy*speed,0,bounds());scheduleRender()}},{passive:false});
+stage.addEventListener('touchend',e=>{if(gesture&&gesture.mode==='pinch'&&e.touches.length<2)settle();else if(gesture&&gesture.mode==='scroll'&&e.touches.length===0){if(performance.now()-gesture.lastT<100)startGlide(gesture.velocity)}gesture=e.touches.length===1?{mode:'scroll',y:e.touches[0].clientY,scroll,lastY:e.touches[0].clientY,lastT:performance.now(),velocity:0}:null});stage.addEventListener('touchcancel',()=>{if(gesture?.mode==='pinch')settle();stopGlide();gesture=null});stage.addEventListener('wheel',e=>{e.preventDefault();if(e.ctrlKey){stop();set(density*Math.exp(e.deltaY*.003))}else{scroll=Math.max(0,scroll+e.deltaY);scheduleRender()}},{passive:false});window.addEventListener('resize',scheduleRender);render();</script><style>
+#photoViewer{position:fixed;inset:0;z-index:99;background:#08090b;display:none;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#photoViewer.open{display:block}
+#viewerImg{position:absolute;width:100%;height:100%;object-fit:contain;transform-origin:center;will-change:transform;pointer-events:none;-webkit-user-drag:none}
+#viewerClose{position:absolute;z-index:3;top:max(12px,env(safe-area-inset-top));right:14px;border:0;border-radius:30px;background:#444b;color:white;font-size:25px;width:42px;height:42px}
+#viewerZoom{position:absolute;z-index:3;top:max(16px,env(safe-area-inset-top));left:14px;background:#333c;color:#fff;padding:9px 13px;border-radius:20px;font:15px -apple-system,sans-serif;pointer-events:none}
+#viewerCount{position:absolute;z-index:3;bottom:max(18px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:white;pointer-events:none;font:14px -apple-system,sans-serif}
+</style><div id="photoViewer"><img id="viewerImg" alt=""><div id="viewerZoom">1.0× / 20×</div><button id="viewerClose" aria-label="Закрыть">×</button><div id="viewerCount"></div></div>
+<script>
+(()=>{'use strict';
+const viewer=document.querySelector('#photoViewer'),img=document.querySelector('#viewerImg'),counter=document.querySelector('#viewerCount'),close=document.querySelector('#viewerClose'),zoom=document.querySelector('#viewerZoom');
+let current=0,scale=1,tx=0,ty=0,gestureV=null,lastTap=0;
+const limit=(v,a,b)=>Math.max(a,Math.min(b,v));
+function paint(){
+ const w=innerWidth,h=innerHeight,iw=img.naturalWidth||w,ih=img.naturalHeight||h,fit=Math.min(w/iw,h/ih),baseW=iw*fit,baseH=ih*fit;
+ const maxX=Math.max(0,(baseW*scale-w)/2),maxY=Math.max(0,(baseH*scale-h)/2);
+ tx=limit(tx,-maxX,maxX);ty=limit(ty,-maxY,maxY);
+ img.style.transform='translate3d('+tx+'px,'+ty+'px,0) scale('+scale+')';
+ zoom.textContent=scale.toFixed(1)+'× / 20×';
+}
+function reset(){scale=1;tx=0;ty=0;paint()}
+function show(i){
+ current=limit(i,0,N-1);
+ img.src=current===0?'https://images.unsplash.com/photo-1552053831-71594a27632d?w=2400&q=90':'https://picsum.photos/seed/archive-'+((current%90)+1)+'/1200/1200';
+ counter.textContent=(current+1)+' / '+N;viewer.classList.add('open');reset();
+}
+function hide(){viewer.classList.remove('open');img.removeAttribute('src');gestureV=null}
+close.addEventListener('click',hide);img.addEventListener('load',paint);
+const pos=t=>({x:t.clientX,y:t.clientY}),distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+function begin(e){
+ if(e.target===close)return;
+ e.preventDefault();const a=pos(e.touches[0]);
+ if(e.touches.length>=2){const b=pos(e.touches[1]);gestureV={mode:'pinch',dist:Math.max(1,distance(a,b)),startScale:scale,startTx:tx,startTy:ty,startMid:mid(a,b),moved:true}}
+ else gestureV={mode:'drag',last:a,start:a,moved:false};
+}
+function move(e){
+ if(!gestureV)return;e.preventDefault();
+ if(e.touches.length>=2){
+  const a=pos(e.touches[0]),b=pos(e.touches[1]),m=mid(a,b);
+  if(gestureV.mode!=='pinch'){gestureV={mode:'pinch',dist:Math.max(1,distance(a,b)),startScale:scale,startTx:tx,startTy:ty,startMid:m,moved:true}}
+  const g=gestureV,newScale=limit(g.startScale*distance(a,b)/g.dist,1,20),ratio=newScale/g.startScale;
+  const cx=g.startMid.x-innerWidth/2,cy=g.startMid.y-innerHeight/2;
+  tx=(g.startTx-cx)*ratio+cx+(m.x-g.startMid.x);
+  ty=(g.startTy-cy)*ratio+cy+(m.y-g.startMid.y);
+  scale=newScale;paint();
+ }else if(e.touches.length===1){
+  const p=pos(e.touches[0]);
+  if(gestureV.mode!=='drag'){gestureV={mode:'drag',last:p,start:p,moved:true};return}
+  const g=gestureV;
+  if(Math.abs(p.x-g.start.x)+Math.abs(p.y-g.start.y)>7)g.moved=true;
+  if(scale>1){tx+=p.x-g.last.x;ty+=p.y-g.last.y;paint()}
+  g.last=p;
+ }
+}
+function finish(e){
+ if(e.touches.length===1){const p=pos(e.touches[0]);gestureV={mode:'drag',last:p,start:p,moved:true};return}
+ if(e.touches.length===0&&gestureV){
+  const g=gestureV;
+  if(g.mode==='drag'&&scale===1&&g.moved&&Math.abs(g.last.x-g.start.x)>55)show(current+(g.last.x<g.start.x?1:-1));
+  else if(g.mode==='drag'&&!g.moved){const now=performance.now();if(now-lastTap<320){if(scale>1)reset();else{scale=2.5;paint()}lastTap=0}else lastTap=now}
+  gestureV=null;
+ }
+}
+viewer.addEventListener('touchstart',begin,{passive:false});
+viewer.addEventListener('touchmove',move,{passive:false});
+viewer.addEventListener('touchend',finish,{passive:false});
+viewer.addEventListener('touchcancel',()=>{gestureV=null},{passive:false});
+stage.addEventListener('click',e=>{if(gesture||viewer.classList.contains('open'))return;const rect=stage.getBoundingClientRect(),n=Math.round(density),gap=gapFor(density),step=(stage.clientWidth-gap*(n-1))/n+gap;const col=Math.floor((e.clientX-rect.left)/step),row=Math.floor((e.clientY-rect.top+scroll)/step),i=row*n+col;if(col>=0&&col<n&&i>=0&&i<N)show(i)});
+})();
+</script>
