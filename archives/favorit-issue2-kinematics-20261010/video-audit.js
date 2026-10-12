@@ -1,0 +1,15 @@
+/* Isolated video HUD. Scalar timing only; no DOMRect/readback inside render. */
+(()=>{'use strict';if(new URLSearchParams(location.search).get('video')!=='1')return;
+const hud=document.createElement('div');hud.id='pinchVideoHUD';hud.style.cssText='position:fixed;z-index:99999;bottom:4px;left:4px;right:4px;pointer-events:none;border-radius:7px;background:#111d;color:#fff;padding:5px 7px;font:11px/1.3 ui-monospace,monospace;white-space:pre-line';hud.textContent='Видео-диагностика · сделайте pinch';document.body.append(hud);
+let c=null,run=null,last=null,serial=0,lastDisplay=0;
+function show(force=false){const now=performance.now();if(!force&&now-lastDisplay<150)return;lastDisplay=now;const r=run||last;if(!r)return;hud.textContent=(run?'PINCH':'ИТОГ')+' '+r.startDensity.toFixed(2)+' → '+r.density.toFixed(2)+' / '+r.columns+' cols\ninput max '+r.inputGap.toFixed(1)+' ms | rAF max '+r.rafGap.toFixed(1)+' ms | render max '+r.renderMax.toFixed(2)+' ms\n'+r.moves+' moves · '+r.frames+' renders · '+(r.trusted?'trusted events':'synthetic')+' · rAF ≠ displayed FPS'}
+function finish(){if(!run)return;last=run;run=null;show(true)}
+function start(){finish();const t=performance.now();run={id:++serial,start:t,startDensity:c.density,density:c.density,columns:Math.round(c.density),lastInput:0,inputGap:0,lastRAF:0,rafGap:0,renderMax:0,moves:0,frames:0,trusted:false};const r=run;function tick(t){if(run!==r)return;if(r.lastRAF)r.rafGap=Math.max(r.rafGap,t-r.lastRAF);r.lastRAF=t;if(performance.now()-r.start>45000){finish();return}show();requestAnimationFrame(tick)}requestAnimationFrame(tick)}
+function attach(){const next=window.__favoritGallery?.state;if(!next||next===c)return;finish();c=next;const render=c.render;c.render=function(){const t=performance.now(),r=run;try{return render.apply(this,arguments)}finally{if(r===run&&r){r.renderMax=Math.max(r.renderMax,performance.now()-t);r.frames++;r.density=this.density;r.columns=Math.round(this.density);show()}}}}
+setInterval(attach,150);
+document.addEventListener('touchstart',e=>{attach();if(c&&!c.editing&&e.touches.length===2&&c.box.contains(e.target)){start();run.trusted=e.isTrusted}},{capture:true,passive:true});
+document.addEventListener('touchmove',e=>{if(!run||!c.box.contains(e.target)||e.touches.length!==2)return;const t=performance.now();if(run.lastInput)run.inputGap=Math.max(run.inputGap,t-run.lastInput);run.lastInput=t;run.moves++;run.trusted=run.trusted&&e.isTrusted},{capture:true,passive:true});
+for(const type of ['touchend','touchcancel'])document.addEventListener(type,e=>{if(run&&(type==='touchcancel'||e.touches.length<2)){const r=run;setTimeout(()=>{if(run===r)finish()},320)}},{capture:true,passive:true});
+document.addEventListener('visibilitychange',()=>{if(run&&document.hidden)finish()});
+window.__pinchVideoAudit={get run(){return run},get last(){return last}};
+})();
