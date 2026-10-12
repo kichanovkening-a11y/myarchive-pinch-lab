@@ -2,7 +2,7 @@
 
 Test URL: https://archive.vip-teatre.ru:8443/archive-folder-move-test-20261012/
 
-Open a folder, tap its `•••`, choose **Переместить папку**, choose a destination or the main page, then confirm. The same action is available in a folder tile's context menu. The picker shows at most six folders, alphabetically, with prefix search and covers. Source, descendants and current parent are excluded.
+Open a folder, tap its `•••`, choose **Переместить папку**, choose a destination or the main page, then confirm. The same action is available in a folder tile's context menu. The picker shows all eligible folders across the archive in alphabetical pages of six, with prefix search, path labels and covers. Previous/next controls expose every page; changing search resets to the first page. Cancel is at the top of both chooser and confirmation; the chooser header remains visible while scrolling. Source, descendants and current parent are excluded.
 
 The service writes only `folders.parent_id` in a **private metadata snapshot** at `/opt/myarchive/audits/folder-move-test-20261012/archive.db`. Original DB path and inode are explicitly forbidden for writes. Files, folder IDs, names and descendant relationships remain intact. SQLite `BEGIN IMMEDIATE` serializes tree validation and updates, preventing concurrent cycle creation. Destination ancestor walks also reject corrupt preexisting cycles. Counts are recomputed over the resulting subtree.
 
@@ -21,7 +21,7 @@ python3 -m unittest discover -s archive-search-20261012
 node --test archive-search-20261012/search-state.test.cjs
 ```
 
-18 new Python checks cover subtree/file preservation, root moves, cycles, concurrent updates, invalid IDs, protection of production DB, counts, HTTP authorization, missing destination and rejected unrelated mutations. Six new JS checks cover destination exclusion, prefix search, maximum six results, production mutation guards including missing helper, and canonical route ancestry. The existing 32 search checks also pass. Physical iPhone testing remains user validation; no pinch performance claim is made.
+18 new Python checks cover subtree/file preservation, root moves, cycles, concurrent updates, invalid IDs, protection of production DB, counts, HTTP authorization, missing destination and rejected unrelated mutations. Eight new JS checks cover destination exclusion, prefix search, maximum six results, production mutation guards including missing helper, and canonical route ancestry. The existing 32 search checks also pass. Physical iPhone testing remains user validation; no pinch performance claim is made.
 
 Rollback: stop only the test PID in `/opt/myarchive/web/archive-folder-move-test-20261012/server.pid`, remove its nginx location, nginx -t and reload nginx. The isolated copy can stay archived outside webroot; do not touch the production DB or old test directories.
 

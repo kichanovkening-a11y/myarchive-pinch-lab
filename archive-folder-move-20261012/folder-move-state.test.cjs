@@ -18,3 +18,13 @@ test('relocated folder routes follow the new ancestry',()=>{
   assert.equal(typeof fn,'function','Browser route rebuilding is not implemented');
   const routes=fn(updated,3);assert.deepEqual(routes.map(r=>r.folderId),[null,4,2,3]);assert.deepEqual(routes.map(r=>r.stack),[[],[null],[null,4],[null,4,2]]);
 });
+test('later pages expose folders beyond the first six without duplicates',()=>{
+  const many=Array.from({length:14},(_,i)=>({id:i+10,name:'Папка '+String(i).padStart(2,'0'),parent_id:null}));
+  const all=[...rows,...many],fn=model().destinations;
+  const a=fn(all,2,'Папка',0),b=fn(all,2,'Папка',6),c=fn(all,2,'Папка',12);
+  assert.deepEqual([...a,...b,...c].map(f=>f.id),many.map(f=>f.id));assert.equal(c.length,2);
+});
+test('destination count includes all matching eligible folders',()=>{
+  const fn=model().destinationCount;assert.equal(typeof fn,'function','Full destination count is missing');
+  assert.equal(fn(rows,2,''),1);assert.equal(fn(rows,2,'ГаС'),1);assert.equal(fn(rows,2,'Внутри'),0);
+});

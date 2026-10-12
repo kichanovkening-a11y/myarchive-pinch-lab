@@ -1,6 +1,13 @@
 .folder-move-test-note{font-size:12px;line-height:1.35;margin:7px 0 10px;opacity:.8}
 body.inside-folder .folder-move-test-note{display:none}
 .folder-move-picker{max-height:70dvh;overflow:auto}
+.folder-move-header{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;background:#fffffff5}
+.folder-move-header h3{flex:1;min-width:0;margin:0;font-size:19px}
+.folder-move-header button{flex:none;min-height:44px;margin:0;padding:0 4px;border:0;background:transparent;color:#263038;font-size:14px}
+.folder-move-list-label{font-size:13px;opacity:.8;margin:0 0 4px}
+.folder-move-pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px;font-size:13px}
+.folder-move-pager button{min-width:44px;min-height:40px;border:0;border-radius:9px;background:#e7e9e8;color:#263038;font-size:20px}
+.folder-move-pager button:disabled{opacity:.35}
 .folder-move-picker input{width:100%;font-size:16px}
 .folder-move-picker p{margin:0 0 12px;overflow-wrap:anywhere}
 #folderMoveRoot{width:100%;min-height:44px;margin:8px 0 10px;border-radius:10px;background:#e7e9e8;color:#263038}
