@@ -71,5 +71,38 @@ class SearchTests(unittest.TestCase):
     def test_documents_are_not_in_photo_video_search(self):
         self.assertEqual(self.search('документ')['items'], [])
 
+    def test_date_only_search_returns_media_not_folders(self):
+        result=self.search('', date_from='2026-10-01', date_to='2026-10-02')
+        self.assertEqual([x['id'] for x in result['items']], [2,1])
+        self.assertTrue(all(x['kind']=='file' for x in result['items']))
+
+    def test_date_can_narrow_text_search(self):
+        self.assertEqual(self.search('шкат',date_from='2026-10-02')['items'], [])
+
+    def test_period_includes_entire_last_day_in_moscow(self):
+        with sqlite3.connect(self.db) as c:
+            c.executemany('INSERT INTO files VALUES(?,?,?,?,?,?)',[(7,'вечер','photo',1,'2026-10-02 20:59:59',17),(8,'следующий день','photo',1,'2026-10-02 21:00:00',18),(9,'начало','photo',1,'2026-09-30T21:00:00',19),(10,'до начала','photo',1,'2026-09-30 20:59:59',20)])
+        ids=[x['id'] for x in self.search('',date_from='2026-10-01',date_to='2026-10-02')['items']]
+        self.assertIn(7,ids);self.assertIn(9,ids);self.assertNotIn(8,ids);self.assertNotIn(10,ids)
+
+    def test_date_range_must_not_be_reversed(self):
+        with self.assertRaises(ValueError):self.search('',date_from='2026-10-03',date_to='2026-10-01')
+
+    def test_invalid_calendar_date_is_rejected(self):
+        with self.assertRaises(ValueError):self.search('',date_from='2026-02-30')
+
+    def test_partial_date_is_rejected(self):
+        with self.assertRaises(ValueError):self.search('',date_from='2026-10')
+
+    def test_date_only_pagination_retains_all_results(self):
+        a=self.search('',date_from='2026-10-01',date_to='2026-10-02',limit=1)
+        b=self.search('',date_from='2026-10-01',date_to='2026-10-02',limit=1,offset=a['next_offset'])
+        self.assertEqual([x['id'] for x in a['items']+b['items']], [2,1])
+
+    def test_mixed_timestamp_formats_are_sorted_by_time(self):
+        with sqlite3.connect(self.db) as c:
+            c.executemany('INSERT INTO files VALUES(?,?,?,?,?,?)',[(7,'порядок','photo',1,'2026-10-02T01:00:00',17),(8,'порядок','photo',1,'2026-10-02 20:00:00',18)])
+        self.assertEqual([x['id'] for x in self.search('порядок')['items']], [8,7])
+
 if __name__ == '__main__':
     unittest.main()

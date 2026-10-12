@@ -33,4 +33,10 @@ class HTTPTests(unittest.TestCase):
     def test_invalid_offset_is_bad_request(self):
         self.assertEqual(self.request(self.start(lambda headers:True),'GET',ROUTE+'?offset=oops'),400)
 
+    def test_invalid_date_is_bad_request(self):
+        self.assertEqual(self.request(self.start(lambda headers:True),'GET',ROUTE+'?from=2026-02-30'),400)
+
+    def test_reversed_period_is_bad_request(self):
+        self.assertEqual(self.request(self.start(lambda headers:True),'GET',ROUTE+'?from=2026-10-03&to=2026-10-01'),400)
+
 if __name__=='__main__':unittest.main()

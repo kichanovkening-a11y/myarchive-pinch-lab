@@ -7,6 +7,7 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import date
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROUTE = '/archive-search-test-20261012/api/search'
@@ -21,30 +22,51 @@ def open_archive(path):
     connection.create_function('search_text', 1, normalize, deterministic=True)
     return connection
 
-def search_archive(path, query, limit=40, offset=0):
+def calendar_date(value):
+    if not value:
+        return ''
+    parsed = date.fromisoformat(value)
+    if parsed.isoformat() != value:
+        raise ValueError('Укажите дату в формате ГГГГ-ММ-ДД')
+    return value
+
+def search_archive(path, query, limit=40, offset=0, date_from='', date_to=''):
     query = query.strip()
     if len(query) > 200:
         raise ValueError('Не более 200 символов')
     limit = max(1, min(int(limit), 40))
     offset = max(0, int(offset))
-    if not query:
+    date_from, date_to = calendar_date(date_from), calendar_date(date_to)
+    dated = bool(date_from or date_to)
+    if date_from and date_to and date_from > date_to:
+        raise ValueError('Дата «С» должна быть не позже даты «По»')
+    if not query and not dated:
         return dict(items=[], total=0, has_more=False, next_offset=None)
     tokens = normalize(query).split()
-    folder_where = ' AND '.join('instr(search_text(name), ?) > 0' for _ in tokens)
-    file_where = "file_type IN ('photo','video') AND " + ' AND '.join('instr(search_text(caption), ?) > 0' for _ in tokens)
+    folder_where = ' AND '.join('instr(search_text(name), ?) > 0' for _ in tokens) if not dated else '0'
+    file_terms = ["file_type IN ('photo','video')"] + ['instr(search_text(caption), ?) > 0' for _ in tokens]
+    file_params = list(tokens)
+    if date_from:
+        file_terms.append("date(created_at, '+3 hours') >= ?")
+        file_params.append(date_from)
+    if date_to:
+        file_terms.append("date(created_at, '+3 hours') <= ?")
+        file_params.append(date_to)
+    file_where = ' AND '.join(file_terms)
+    folder_params = tokens if not dated else []
     c = open_archive(path)
     try:
         # Keep counts and both result groups in the same read snapshot.
         c.execute('BEGIN')
-        nf = c.execute('SELECT COUNT(*) FROM folders WHERE ' + folder_where, tokens).fetchone()[0]
-        nm = c.execute('SELECT COUNT(*) FROM files WHERE ' + file_where, tokens).fetchone()[0]
+        nf = c.execute('SELECT COUNT(*) FROM folders WHERE ' + folder_where, folder_params).fetchone()[0]
+        nm = c.execute('SELECT COUNT(*) FROM files WHERE ' + file_where, file_params).fetchone()[0]
         result = []
         if offset < nf:
-            rows = c.execute('SELECT id,name,parent_id FROM folders WHERE ' + folder_where + ' ORDER BY search_text(name),id LIMIT ? OFFSET ?', [*tokens,limit,offset]).fetchall()
+            rows = c.execute('SELECT id,name,parent_id FROM folders WHERE ' + folder_where + ' ORDER BY search_text(name),id LIMIT ? OFFSET ?', [*folder_params,limit,offset]).fetchall()
             result.extend(dict(row, kind='folder') for row in rows)
         remaining = limit - len(result)
         if remaining:
-            rows = c.execute('SELECT id,caption,file_type,folder_id,created_at,archive_message_id FROM files WHERE ' + file_where + ' ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?', [*tokens,remaining,max(0,offset-nf)]).fetchall()
+            rows = c.execute('SELECT id,caption,file_type,folder_id,created_at,archive_message_id FROM files WHERE ' + file_where + ' ORDER BY datetime(created_at) DESC,id DESC LIMIT ? OFFSET ?', [*file_params,remaining,max(0,offset-nf)]).fetchall()
             result.extend(dict(row, kind='file') for row in rows)
         more = offset + len(result) < nf + nm
         return dict(items=result, total=nf+nm, has_more=more, next_offset=offset+len(result) if more else None)
@@ -88,10 +110,10 @@ def make_handler(db_path, access_check=authorize):
                 if not access_check(self.headers):
                     return self.reply(403, dict(error='Нет доступа'))
                 args = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
-                result = search_archive(db_path, args.get('q',[''])[0], limit=int(args.get('limit',['40'])[0]), offset=int(args.get('offset',['0'])[0]))
+                result = search_archive(db_path, args.get('q',[''])[0], limit=int(args.get('limit',['40'])[0]), offset=int(args.get('offset',['0'])[0]), date_from=args.get('from',[''])[0], date_to=args.get('to',[''])[0])
                 self.reply(200, result)
             except (ValueError, TypeError):
-                self.reply(400, dict(error='Некорректный запрос: до 200 символов'))
+                self.reply(400, dict(error='Проверьте текст поиска и даты периода. Дата «С» должна быть не позже даты «По».'))
             except (sqlite3.Error, OSError, urllib.error.URLError):
                 self.reply(503, dict(error='Поиск временно недоступен. Повторите попытку.'))
 

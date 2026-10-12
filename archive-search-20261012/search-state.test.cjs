@@ -28,3 +28,9 @@ test('transport errors reach the interface',async()=>{
   const state=createSearchState(async()=>{throw Error('offline')},()=>{},e=>message=e.message);
   await state.search('шка');assert.equal(message,'offline');
 });
+test('date-only search executes and retains dates on later pages',async()=>{
+  const {createSearchState}=require(path),calls=[];
+  const state=createSearchState(async(q,offset,signal,filters)=>{calls.push({q,offset,filters});return {items:[{id:offset+1}],has_more:offset===0,next_offset:1}},()=>{});
+  await state.search('',{dateFrom:'2026-10-01',dateTo:'2026-10-02'});await state.more();
+  assert.deepEqual(calls,[{q:'',offset:0,filters:{dateFrom:'2026-10-01',dateTo:'2026-10-02'}},{q:'',offset:1,filters:{dateFrom:'2026-10-01',dateTo:'2026-10-02'}}]);
+});
