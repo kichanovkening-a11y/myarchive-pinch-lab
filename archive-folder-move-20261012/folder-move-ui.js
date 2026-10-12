@@ -44,7 +44,11 @@
     if(!menu||menu.querySelector('#folderMoveInside'))return;
     const button=document.createElement('button');button.id='folderMoveInside';button.type='button';button.className='context-menu-item';button.textContent='Переместить папку';button.onclick=event=>{event.preventDefault();closeContextMenu();choose(folder)};menu.prepend(button);bindAction(button);
   }
-  const oldFolderMenu=folderMenu;folderMenu=function(folder){oldFolderMenu(folder);insertMove(activeContextMenu?.menu,folder)};
+  const oldFolderMenu=folderMenu;folderMenu=function(folder){oldFolderMenu(folder);insertMove(activeContextMenu?.menu,folder);
+    const menu=activeContextMenu?.menu;if(menu&&!menu.querySelector('#folderContextCancel')){
+      const cancel=document.createElement('button');cancel.id='folderContextCancel';cancel.type='button';cancel.className='context-menu-item';cancel.textContent='Отмена';
+      cancel.onclick=event=>{event.preventDefault();event.stopPropagation();closeContextMenu()};menu.prepend(cancel);bindAction(cancel);
+    }};
   const oldInnerMenu=showInnerMenu;showInnerMenu=function(){oldInnerMenu();if(!selectionMode&&currentId!==null)insertMove(activeContextMenu?.menu,folders.find(f=>Number(f.id)===Number(currentId)))};
   window.addEventListener('popstate',event=>{
     const route=event.state?.[ARCHIVE_ROUTE_KEY];if(route?.kind!=='folder'||currentId===null)return;

@@ -2,7 +2,7 @@
 (function(){
   const content=document.querySelector('.content');
   const form=document.createElement('form');form.className='archive-search-form';form.setAttribute('role','search');
-  form.innerHTML='<label class="archive-search-label" for="archiveSearchInput">Поиск по архиву</label><div class="archive-search-row"><input id="archiveSearchInput" type="search" maxlength="200" placeholder="Папка или подпись фото…" autocomplete="off" enterkeyhint="search"><button type="button" id="archiveSearchClear" aria-label="Очистить поиск">✕</button></div>';
+  form.innerHTML='<div class="archive-search-row"><input id="archiveSearchInput" aria-label="Поиск" type="search" maxlength="200" placeholder="Папка или подпись фото…" autocomplete="off" enterkeyhint="search"><button type="button" id="archiveSearchClear" aria-label="Очистить поиск">✕</button></div>';
   form.insertAdjacentHTML('beforeend','<details class="archive-search-dates"><summary>Период добавления</summary><div class="archive-search-date-row"><label>С<input id="archiveSearchFrom" type="date"></label><label>По<input id="archiveSearchTo" type="date"></label></div><small>Дата добавления, московское время. За период — только фото и видео.</small></details>');
   const panel=document.createElement('section');panel.className='archive-search-panel';panel.hidden=true;
   panel.innerHTML='<div id="archiveSearchStatus" role="status" aria-live="polite"></div><div id="archiveSearchResults" class="archive-search-results"></div><button id="archiveSearchMore" type="button" hidden>Показать ещё</button>';

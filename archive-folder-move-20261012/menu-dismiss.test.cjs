@@ -1,0 +1,6 @@
+const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+function setup(){const listeners={},context={Date,activeContextMenu:{},document:{body:{classList:{contains:()=>true}},addEventListener:(type,fn)=>listeners[type]=fn},closeContextMenu(){this.activeContextMenu=null},close(){}};vm.runInNewContext(fs.readFileSync(__dirname+'/menu-dismiss-guard.js','utf8'),context);return{context,listeners}}
+function click(){return{preventDefault(){this.blocked=true},stopImmediatePropagation(){this.stopped=true}}}
+test('closing a menu blocks the release click from opening an underlying folder',()=>{const {context,listeners}=setup();context.closeContextMenu();const e=click();listeners.click(e);assert.equal(e.blocked,true);assert.equal(e.stopped,true)});
+test('a fresh deliberate press after cancel can open a folder',()=>{const {context,listeners}=setup();context.closeContextMenu();listeners.pointerdown();const e=click();listeners.click(e);assert.equal(e.blocked,undefined)});
+test('closing a dialog also blocks its trailing click',()=>{const {context,listeners}=setup();context.close();const e=click();listeners.click(e);assert.equal(e.blocked,true)});
