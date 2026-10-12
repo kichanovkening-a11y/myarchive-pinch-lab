@@ -1,0 +1,15 @@
+.folder-move-test-note{font-size:12px;line-height:1.35;margin:7px 0 10px;opacity:.8}
+body.inside-folder .folder-move-test-note{display:none}
+.folder-move-picker{max-height:70dvh;overflow:auto}
+.folder-move-picker input{width:100%;font-size:16px}
+.folder-move-picker p{margin:0 0 12px;overflow-wrap:anywhere}
+#folderMoveRoot{width:100%;min-height:44px;margin:8px 0 10px;border-radius:10px;background:#e7e9e8;color:#263038}
+#folderMoveRoot:disabled{opacity:.45}
+.folder-move-target{display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:7px 0;text-align:left;background:transparent;color:#263038;border-bottom:1px solid #e1e4e1}
+.folder-move-target img,.folder-move-icon{flex:none;width:48px;height:48px;object-fit:cover;border-radius:8px;background:#d1d5d2}
+.folder-move-icon{display:flex;align-items:center;justify-content:center;font-size:26px}
+.folder-move-target>span:last-child{min-width:0}
+.folder-move-target strong,.folder-move-target small{display:block;overflow-wrap:anywhere}
+.folder-move-target strong{font-size:15px}.folder-move-target small{font-size:11px;opacity:.7;margin-top:3px}
+#folderMoveStatus,#folderMoveError{font-size:13px;margin:8px 0;overflow-wrap:anywhere}
+.folder-move-toast{position:fixed;z-index:999;bottom:calc(var(--app-bottom-safe-offset) + 70px);left:50%;transform:translateX(-50%);width:max-content;max-width:90vw;padding:10px 14px;border-radius:12px;background:#263038ed;color:white;font-size:14px;box-shadow:0 4px 16px #0003}
