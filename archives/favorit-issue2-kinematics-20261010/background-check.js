@@ -1,0 +1,3 @@
+const backdropButton=document.createElement('button');backdropButton.textContent='Проверить прозрачность';document.querySelector('#run').after(backdropButton);
+const backdropReport=document.createElement('pre');backdropReport.id='backgroundReport';document.querySelector('#report').before(backdropReport);
+backdropButton.onclick=async()=>{await show(30);const c=app.contentWindow.__favoritGallery.state,p=c.ctx.getImageData(10,c.canvas.height-10,1,1).data;backdropReport.textContent=JSON.stringify({background:app.contentWindow.getComputedStyle(c.box).backgroundColor,width:c.box.clientWidth,left:c.box.getBoundingClientRect().left,bottomPixel:[...p],pass:p[3]===0},null,2)};

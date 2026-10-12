@@ -1,0 +1,576 @@
+{
+  "kind": "Node renderer execution, not browser/iPhone paint",
+  "width": 390,
+  "height": 710,
+  "referenceCountAdaptedOnly": true,
+  "cases": [
+    {
+      "count": 13,
+      "initialScroll": 0,
+      "frames": 901,
+      "compared": 11713,
+      "maxRendererCoordinateDifference": 0,
+      "maxFrameItemJump": 354.94949922687573,
+      "holdJump": 0,
+      "releaseDensity": 3,
+      "crossings": [
+        {
+          "frame": 30,
+          "d": 3.5,
+          "columns": 4,
+          "maxItemJump": 321.72935485867276,
+          "scroll": 0
+        },
+        {
+          "frame": 90,
+          "d": 4.5,
+          "columns": 5,
+          "maxItemJump": 328.55587043910816,
+          "scroll": 0
+        },
+        {
+          "frame": 150,
+          "d": 5.5,
+          "columns": 6,
+          "maxItemJump": 335.94295812103456,
+          "scroll": 0
+        },
+        {
+          "frame": 210,
+          "d": 6.5,
+          "columns": 7,
+          "maxItemJump": 0.002360657182243056,
+          "scroll": 0
+        },
+        {
+          "frame": 270,
+          "d": 7.5,
+          "columns": 8,
+          "maxItemJump": 0.002380952380974577,
+          "scroll": 0
+        },
+        {
+          "frame": 330,
+          "d": 8.5,
+          "columns": 9,
+          "maxItemJump": 0.0024305555555201863,
+          "scroll": 0
+        },
+        {
+          "frame": 390,
+          "d": 9.5,
+          "columns": 10,
+          "maxItemJump": 354.94949922687573,
+          "scroll": 0
+        },
+        {
+          "frame": 481,
+          "d": 9.483333333333333,
+          "columns": 9,
+          "maxItemJump": 354.94949922687573,
+          "scroll": 0
+        },
+        {
+          "frame": 541,
+          "d": 8.483333333333334,
+          "columns": 8,
+          "maxItemJump": 0.0024305555555201863,
+          "scroll": 0
+        },
+        {
+          "frame": 601,
+          "d": 7.483333333333333,
+          "columns": 7,
+          "maxItemJump": 0.002380952380974577,
+          "scroll": 0
+        },
+        {
+          "frame": 661,
+          "d": 6.483333333333333,
+          "columns": 6,
+          "maxItemJump": 0.002360657182243056,
+          "scroll": 0
+        },
+        {
+          "frame": 721,
+          "d": 5.483333333333333,
+          "columns": 5,
+          "maxItemJump": 335.94295812103456,
+          "scroll": 0
+        },
+        {
+          "frame": 781,
+          "d": 4.483333333333333,
+          "columns": 4,
+          "maxItemJump": 328.55587043910816,
+          "scroll": 0
+        },
+        {
+          "frame": 841,
+          "d": 3.4833333333333334,
+          "columns": 3,
+          "maxItemJump": 321.72935485867276,
+          "scroll": 0
+        }
+      ]
+    },
+    {
+      "count": 13,
+      "initialScroll": 100,
+      "frames": 901,
+      "compared": 11713,
+      "maxRendererCoordinateDifference": 0,
+      "maxFrameItemJump": 354.94949922687573,
+      "holdJump": 0,
+      "releaseDensity": 3,
+      "crossings": [
+        {
+          "frame": 30,
+          "d": 3.5,
+          "columns": 4,
+          "maxItemJump": 321.72935485867276,
+          "scroll": 0
+        },
+        {
+          "frame": 90,
+          "d": 4.5,
+          "columns": 5,
+          "maxItemJump": 328.55587043910816,
+          "scroll": 0
+        },
+        {
+          "frame": 150,
+          "d": 5.5,
+          "columns": 6,
+          "maxItemJump": 335.94295812103456,
+          "scroll": 0
+        },
+        {
+          "frame": 210,
+          "d": 6.5,
+          "columns": 7,
+          "maxItemJump": 0.002360657182243056,
+          "scroll": 0
+        },
+        {
+          "frame": 270,
+          "d": 7.5,
+          "columns": 8,
+          "maxItemJump": 0.002380952380974577,
+          "scroll": 0
+        },
+        {
+          "frame": 330,
+          "d": 8.5,
+          "columns": 9,
+          "maxItemJump": 0.0024305555555201863,
+          "scroll": 0
+        },
+        {
+          "frame": 390,
+          "d": 9.5,
+          "columns": 10,
+          "maxItemJump": 354.94949922687573,
+          "scroll": 0
+        },
+        {
+          "frame": 481,
+          "d": 9.483333333333333,
+          "columns": 9,
+          "maxItemJump": 354.94949922687573,
+          "scroll": 0
+        },
+        {
+          "frame": 541,
+          "d": 8.483333333333334,
+          "columns": 8,
+          "maxItemJump": 0.0024305555555201863,
+          "scroll": 0
+        },
+        {
+          "frame": 601,
+          "d": 7.483333333333333,
+          "columns": 7,
+          "maxItemJump": 0.002380952380974577,
+          "scroll": 0
+        },
+        {
+          "frame": 661,
+          "d": 6.483333333333333,
+          "columns": 6,
+          "maxItemJump": 0.002360657182243056,
+          "scroll": 0
+        },
+        {
+          "frame": 721,
+          "d": 5.483333333333333,
+          "columns": 5,
+          "maxItemJump": 335.94295812103456,
+          "scroll": 0
+        },
+        {
+          "frame": 781,
+          "d": 4.483333333333333,
+          "columns": 4,
+          "maxItemJump": 328.55587043910816,
+          "scroll": 0
+        },
+        {
+          "frame": 841,
+          "d": 3.4833333333333334,
+          "columns": 3,
+          "maxItemJump": 321.72935485867276,
+          "scroll": 0
+        }
+      ]
+    },
+    {
+      "count": 146,
+      "initialScroll": 0,
+      "frames": 901,
+      "compared": 83110,
+      "maxRendererCoordinateDifference": 0,
+      "maxFrameItemJump": 464.28056651602856,
+      "holdJump": 0,
+      "releaseDensity": 3,
+      "crossings": [
+        {
+          "frame": 30,
+          "d": 3.5,
+          "columns": 4,
+          "maxItemJump": 464.28056651602856,
+          "scroll": 0
+        },
+        {
+          "frame": 90,
+          "d": 4.5,
+          "columns": 5,
+          "maxItemJump": 416.70171585919826,
+          "scroll": 0
+        },
+        {
+          "frame": 150,
+          "d": 5.5,
+          "columns": 6,
+          "maxItemJump": 395.03712343131616,
+          "scroll": 0
+        },
+        {
+          "frame": 210,
+          "d": 6.5,
+          "columns": 7,
+          "maxItemJump": 0.006018518518662684,
+          "scroll": 0
+        },
+        {
+          "frame": 270,
+          "d": 7.5,
+          "columns": 8,
+          "maxItemJump": 0.006044264369772191,
+          "scroll": 0
+        },
+        {
+          "frame": 330,
+          "d": 8.5,
+          "columns": 9,
+          "maxItemJump": 0.006063975415388487,
+          "scroll": 0
+        },
+        {
+          "frame": 390,
+          "d": 9.5,
+          "columns": 10,
+          "maxItemJump": 374.1731958960621,
+          "scroll": 0
+        },
+        {
+          "frame": 481,
+          "d": 9.483333333333333,
+          "columns": 9,
+          "maxItemJump": 374.1731958960621,
+          "scroll": 0
+        },
+        {
+          "frame": 541,
+          "d": 8.483333333333334,
+          "columns": 8,
+          "maxItemJump": 0.006063975415388487,
+          "scroll": 0
+        },
+        {
+          "frame": 601,
+          "d": 7.483333333333333,
+          "columns": 7,
+          "maxItemJump": 0.006044264369772191,
+          "scroll": 0
+        },
+        {
+          "frame": 661,
+          "d": 6.483333333333333,
+          "columns": 6,
+          "maxItemJump": 0.006018518518662684,
+          "scroll": 0
+        },
+        {
+          "frame": 721,
+          "d": 5.483333333333333,
+          "columns": 5,
+          "maxItemJump": 395.03712343131616,
+          "scroll": 0
+        },
+        {
+          "frame": 781,
+          "d": 4.483333333333333,
+          "columns": 4,
+          "maxItemJump": 416.70171585919826,
+          "scroll": 0
+        },
+        {
+          "frame": 841,
+          "d": 3.4833333333333334,
+          "columns": 3,
+          "maxItemJump": 464.28056651602856,
+          "scroll": 0
+        }
+      ]
+    },
+    {
+      "count": 146,
+      "initialScroll": 100,
+      "frames": 901,
+      "compared": 85432,
+      "maxRendererCoordinateDifference": 0,
+      "maxFrameItemJump": 464.28056651602856,
+      "holdJump": 0,
+      "releaseDensity": 3,
+      "crossings": [
+        {
+          "frame": 30,
+          "d": 3.5,
+          "columns": 4,
+          "maxItemJump": 464.28056651602856,
+          "scroll": 100
+        },
+        {
+          "frame": 90,
+          "d": 4.5,
+          "columns": 5,
+          "maxItemJump": 416.70171585919826,
+          "scroll": 100
+        },
+        {
+          "frame": 150,
+          "d": 5.5,
+          "columns": 6,
+          "maxItemJump": 395.03712343131616,
+          "scroll": 100
+        },
+        {
+          "frame": 210,
+          "d": 6.5,
+          "columns": 7,
+          "maxItemJump": 0.006882439235002772,
+          "scroll": 100
+        },
+        {
+          "frame": 270,
+          "d": 7.5,
+          "columns": 8,
+          "maxItemJump": 0.006780955353454344,
+          "scroll": 100
+        },
+        {
+          "frame": 330,
+          "d": 8.5,
+          "columns": 9,
+          "maxItemJump": 0.006383602885618994,
+          "scroll": 100
+        },
+        {
+          "frame": 390,
+          "d": 9.5,
+          "columns": 10,
+          "maxItemJump": 365.3269674080594,
+          "scroll": 0
+        },
+        {
+          "frame": 481,
+          "d": 9.483333333333333,
+          "columns": 9,
+          "maxItemJump": 374.1731958960621,
+          "scroll": 0
+        },
+        {
+          "frame": 541,
+          "d": 8.483333333333334,
+          "columns": 8,
+          "maxItemJump": 0.006063975415388487,
+          "scroll": 0
+        },
+        {
+          "frame": 601,
+          "d": 7.483333333333333,
+          "columns": 7,
+          "maxItemJump": 0.006044264369772191,
+          "scroll": 0
+        },
+        {
+          "frame": 661,
+          "d": 6.483333333333333,
+          "columns": 6,
+          "maxItemJump": 0.006018518518662684,
+          "scroll": 0
+        },
+        {
+          "frame": 721,
+          "d": 5.483333333333333,
+          "columns": 5,
+          "maxItemJump": 395.03712343131616,
+          "scroll": 0
+        },
+        {
+          "frame": 781,
+          "d": 4.483333333333333,
+          "columns": 4,
+          "maxItemJump": 416.70171585919826,
+          "scroll": 0
+        },
+        {
+          "frame": 841,
+          "d": 3.4833333333333334,
+          "columns": 3,
+          "maxItemJump": 464.28056651602856,
+          "scroll": 0
+        }
+      ]
+    }
+  ],
+  "seams": [
+    {
+      "density": 3.5,
+      "idIndex": 3,
+      "from": {
+        "x": 0,
+        "y": 130.66666666666666,
+        "width": 128.66666666666666,
+        "height": 128.66666666666666
+      },
+      "to": {
+        "x": 294,
+        "y": 0,
+        "width": 96,
+        "height": 96
+      },
+      "jump": 321.72935485867276,
+      "sizeChange": -32.66666666666666
+    },
+    {
+      "density": 4.5,
+      "idIndex": 4,
+      "from": {
+        "x": 0,
+        "y": 98,
+        "width": 96,
+        "height": 96
+      },
+      "to": {
+        "x": 313.6,
+        "y": 0,
+        "width": 76.4,
+        "height": 76.4
+      },
+      "jump": 328.55587043910816,
+      "sizeChange": -19.599999999999994
+    },
+    {
+      "density": 5.5,
+      "idIndex": 5,
+      "from": {
+        "x": 0,
+        "y": 78.4,
+        "width": 76.4,
+        "height": 76.4
+      },
+      "to": {
+        "x": 326.66666666666674,
+        "y": 0,
+        "width": 63.333333333333336,
+        "height": 63.333333333333336
+      },
+      "jump": 335.94295812103456,
+      "sizeChange": -13.06666666666667
+    },
+    {
+      "density": 6.5,
+      "idIndex": 6,
+      "from": {
+        "x": 0,
+        "y": 65.31944444722222,
+        "width": 63.402777763888885,
+        "height": 63.402777763888885
+      },
+      "to": {
+        "x": 335.9285714142857,
+        "y": 0,
+        "width": 54.07142858571429,
+        "height": 54.07142858571429
+      },
+      "jump": 342.2201556240319,
+      "sizeChange": -9.331349178174598
+    },
+    {
+      "density": 7.5,
+      "idIndex": 7,
+      "from": {
+        "x": 0,
+        "y": 55.964285716666666,
+        "width": 54.2142857,
+        "height": 54.2142857
+      },
+      "to": {
+        "x": 342.78124998541665,
+        "y": 0,
+        "width": 47.218750014583335,
+        "height": 47.218750014583335
+      },
+      "jump": 347.31971815222556,
+      "sizeChange": -6.995535685416662
+    },
+    {
+      "density": 8.5,
+      "idIndex": 8,
+      "from": {
+        "x": 0,
+        "y": 48.94791666875,
+        "width": 47.36458331875,
+        "height": 47.36458331875
+      },
+      "to": {
+        "x": 348.07407405925926,
+        "y": 0,
+        "width": 41.92592594074074,
+        "height": 41.92592594074074
+      },
+      "jump": 351.49887564318266,
+      "sizeChange": -5.43865737800926
+    },
+    {
+      "density": 9.5,
+      "idIndex": 9,
+      "from": {
+        "x": 0,
+        "y": 43.49074074259259,
+        "width": 42.07407405925926,
+        "height": 42.07407405925926
+      },
+      "to": {
+        "x": 352.274999985,
+        "y": 0,
+        "width": 37.725000015,
+        "height": 37.725000015
+      },
+      "jump": 354.9494613952403,
+      "sizeChange": -4.349074044259261
+    }
+  ]
+}
